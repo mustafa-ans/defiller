@@ -1,0 +1,13 @@
+# Dev / test artifacts
+_archive/
+*.prev.lua
+*.debug.lua
+
+# VLC runtime / logs
+*.log
+*.pending
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
