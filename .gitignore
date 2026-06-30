@@ -11,3 +11,7 @@ _archive/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# extra scratch
+*.clean.lua
+_to_delete/
