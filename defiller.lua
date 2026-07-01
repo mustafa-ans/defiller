@@ -9,12 +9,13 @@
   THIS PANEL is just for MARKING and SAVING ranges. Workflow:
     1. Play the episode. Open this panel (View > Defiller).
     2. At the filler start, click Mark Start.
-    3. Let it play to the filler end, click Mark End.
+    3. Let it play to the filler end, click Mark End -- this adds the
+       range to the list automatically.
        (You can leave this panel open the whole time -- it floats
         over the video and does not block playback. You can also
         close it: your half-finished Start/End is remembered and
         will be pre-filled when you reopen, even after a restart.)
-    4. Click Add skip range, then Save list.
+    4. Click Save list.
   Saved ranges live in a small, shareable ".skip" text file per
   video and are skipped automatically from then on.
 
@@ -305,15 +306,28 @@ function on_mark_start()
   if t and w.start_in then w.start_in:set_text(string.format("%.2f", t)) end
   save_pending()
   refresh_time()
-  set_status("Start marked and remembered. Find the filler end, then click Mark End. (You can leave this panel open.)")
+  set_status("Start marked. Play to the filler end, then click Mark End - it adds the range automatically.")
 end
 
 function on_mark_end()
   local t = now_seconds()
   if t and w.end_in then w.end_in:set_text(string.format("%.2f", t)) end
-  save_pending()
   refresh_time()
-  set_status("End marked. Click 'Add skip range', then 'Save list'.")
+  -- Auto-add: commit the range immediately when Start+End are valid, so the
+  -- user goes straight from Mark End to a save-ready range (one less click).
+  local s = tonumber(w.start_in:get_text())
+  local e = tonumber(w.end_in:get_text())
+  local ok, err = add_segment(s, e)
+  if ok then
+    refresh_list()
+    w.start_in:set_text("")
+    w.end_in:set_text("")
+    clear_pending()
+    set_status(string.format("Range added (%d total). Click 'Save list' to skip it automatically.", #segments))
+  else
+    save_pending()
+    set_status("End marked, but not added yet: " .. err .. " Fix it, then click 'Add skip range'.")
+  end
 end
 
 function on_add()
@@ -325,7 +339,7 @@ function on_add()
   w.start_in:set_text("")
   w.end_in:set_text("")
   clear_pending()
-  set_status(string.format("Added (%d range(s) total). Click 'Save list' - saved ranges then skip automatically during playback.", #segments))
+  set_status(string.format("Range added (%d total). Click 'Save list' to skip it automatically.", #segments))
 end
 
 function on_delete()
@@ -338,16 +352,8 @@ end
 
 function on_save()
   local ok, info = save_list()
-  if ok then set_status("Saved. These ranges now skip automatically on playback. File: " .. info)
+  if ok then set_status("Saved. These ranges now skip automatically during playback.")
   else set_status("Save failed: " .. tostring(info)) end
-end
-
-function on_reveal()
-  if cur_key then
-    set_status("List file: " .. storage_path(cur_key))
-  else
-    set_status("No file open.")
-  end
 end
 
 function on_apply()
@@ -381,11 +387,10 @@ local function build_widgets()
   -- dropdown is created in refresh_list() at (LIST_COL, LIST_ROW)
   dlg:add_button("Delete selected", on_delete, 4, 7, 1, 1)
 
-  dlg:add_button("Save list", on_save, 1, 8, 1, 1)
-  dlg:add_button("Show list path", on_reveal, 2, 8, 1, 1)
+  dlg:add_button("Save list", on_save, 1, 8, 2, 1)
   dlg:add_button("Preview skips", on_apply, 3, 8, 2, 1)
 
-  w.status = dlg:add_label("Tip: keep this panel open while you watch. Mark Start -> find the end -> Mark End -> Add -> Save.", 1, 9, 4, 1)
+  w.status = dlg:add_label("Tip: keep this panel open. Mark Start -> play to the end -> Mark End (adds it) -> Save list.", 1, 9, 4, 1)
 end
 
 local function show_dialog()

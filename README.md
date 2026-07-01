@@ -50,24 +50,26 @@ Skip the boring parts of your **local videos in VLC — automatically.** Mark th
 1. Play a video.
 2. View menu &rarr; **Defiller** &rarr; the panel opens.
 3. At the filler's start, click **Mark Start**.
-4. At the filler's end, click **Mark End**. (Leave the panel open while you watch — it floats over the video and doesn't block playback.)
-5. Click **Add skip range**, then **Save list**.
+4. At the filler's end, click **Mark End** — the range is added to the list automatically. (Leave the panel open while you watch — it floats over the video and doesn't block playback.)
+5. Click **Save list**.
 
-Done — that video now skips those ranges automatically, every time. Repeat step 3–5 for each filler section.
+Done — that video now skips those ranges automatically, every time. Repeat steps 3–5 for each filler section.
+
+> Prefer to type exact times? Enter seconds into the Start/End boxes and click **Add skip range** by hand — Mark End is just the one-click shortcut.
 
 **Remove a range:** select it &rarr; **Delete selected** &rarr; **Save list**.
 
 ### Good to know
 
 - You don't have to close the panel — it's a floating window; leave it open and scrub underneath.
-- Your in-progress mark is remembered: Mark Start, close the panel (or even restart your PC), reopen &rarr; the Start is pre-filled. It clears once you Add the range.
+- Your in-progress mark is remembered: Mark Start, close the panel (or even restart your PC), reopen &rarr; the Start is pre-filled. It clears once the range is added (when you Mark End).
 - The View-menu check mark is VLC's own "extension is on" indicator (built into VLC). Closing the panel via its X un-checks it; clicking the menu item opens it again.
 
 ---
 
 ## The skip-list format
 
-Each video gets a small text file, `defiller-<filename>.skip`, in your VLC config folder — plain text, editable, shareable:
+Each video gets a small text file, `defiller-<filename>.skip`, saved in your VLC config folder. On Windows that's `%APPDATA%\vlc\` — i.e. `C:\Users\<your-username>\AppData\Roaming\vlc\`. It's plain text, editable, shareable:
 
 ```
 # Defiller skip list
