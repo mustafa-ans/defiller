@@ -50,10 +50,10 @@ Skip the boring parts of your **local videos in VLC — automatically.** Mark th
 1. Play a video.
 2. View menu &rarr; **Defiller** &rarr; the panel opens.
 3. At the filler's start, click **Mark Start**.
-4. At the filler's end, click **Mark End** — the range is added to the list automatically. (Leave the panel open while you watch — it floats over the video and doesn't block playback.)
-5. Click **Save list**.
+4. At the filler's end, click **Mark End** — this **saves** the range and closes the panel. It skips automatically from now on.
+5. For the next filler section, reopen the panel (View → Defiller — a single click) and repeat.
 
-Done — that video now skips those ranges automatically, every time. Repeat steps 3–5 for each filler section.
+Done — that video now skips those ranges automatically, every time.
 
 > Prefer to type exact times? Enter seconds into the Start/End boxes and click **Add skip range** by hand — Mark End is just the one-click shortcut.
 

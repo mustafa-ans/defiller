@@ -9,13 +9,11 @@
   THIS PANEL is just for MARKING and SAVING ranges. Workflow:
     1. Play the episode. Open this panel (View > Defiller).
     2. At the filler start, click Mark Start.
-    3. Let it play to the filler end, click Mark End -- this adds the
-       range to the list automatically.
-       (You can leave this panel open the whole time -- it floats
-        over the video and does not block playback. You can also
-        close it: your half-finished Start/End is remembered and
-        will be pre-filled when you reopen, even after a restart.)
-    4. Click Save list.
+    3. Let it play to the filler end, click Mark End -- this SAVES the
+       range and closes the panel. It skips automatically from now on.
+    4. To mark another section, reopen the panel (View > Defiller, a
+       single click) and repeat. If you close mid-mark, your Start is
+       remembered and pre-filled next time, even after a restart.
   Saved ranges live in a small, shareable ".skip" text file per
   video and are skipped automatically from then on.
 
@@ -306,7 +304,7 @@ function on_mark_start()
   if t and w.start_in then w.start_in:set_text(string.format("%.2f", t)) end
   save_pending()
   refresh_time()
-  set_status("Start marked. Play to the filler end, then click Mark End - it adds the range automatically.")
+  set_status("Start marked. Play to the filler end, then click Mark End - it saves the range and closes.")
 end
 
 function on_mark_end()
@@ -319,11 +317,18 @@ function on_mark_end()
   local e = tonumber(w.end_in:get_text())
   local ok, err = add_segment(s, e)
   if ok then
+    clear_pending()
+    local saved, info = save_list()
+    if saved then
+      -- Auto-close: deactivating the extension makes the NEXT View>Defiller a
+      -- single click (fixes the 2-press reopen when adding multiple ranges).
+      vlc.deactivate()
+      return
+    end
     refresh_list()
     w.start_in:set_text("")
     w.end_in:set_text("")
-    clear_pending()
-    set_status(string.format("Range added (%d total). Click 'Save list' to skip it automatically.", #segments))
+    set_status("Range added, but SAVE FAILED: " .. tostring(info) .. "  Try 'Save list'.")
   else
     save_pending()
     set_status("End marked, but not added yet: " .. err .. " Fix it, then click 'Add skip range'.")
@@ -390,7 +395,7 @@ local function build_widgets()
   dlg:add_button("Save list", on_save, 1, 8, 2, 1)
   dlg:add_button("Preview skips", on_apply, 3, 8, 2, 1)
 
-  w.status = dlg:add_label("Tip: keep this panel open. Mark Start -> play to the end -> Mark End (adds it) -> Save list.", 1, 9, 4, 1)
+  w.status = dlg:add_label("Tip: Mark Start -> play to the filler end -> Mark End. It saves & closes; reopen for the next.", 1, 9, 4, 1)
 end
 
 local function show_dialog()
